@@ -1,16 +1,16 @@
 package org.example.onlineshoppingdemo.controller;
 
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class HelloController {
+    @Resource
     GetSum  getSum;
 
     public HelloController() {
-        getSum = new GetSum();
     }
-
-    public HelloController(GetSum getSum) {
+    protected HelloController(GetSum getSum) {
         this.getSum = getSum;
     }
 
