@@ -1,6 +1,8 @@
 package org.example.onlineshoppingdemo.controller;
 
+import jakarta.annotation.Resource;
 import org.example.onlineshoppingdemo.config.MyUser;
+import org.example.onlineshoppingdemo.service.JwtService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,12 @@ import java.util.Map;
 @Controller
 public class UserController {
     Map<Integer, MyUser> users = new HashMap<Integer, MyUser>();
+
+    @Resource(name = "z3") // default user is z3
+    MyUser defaultUser;
+
+    @Resource
+    JwtService jwtService;
 
     @PostMapping("/users")
     public String addUser(@RequestParam int id,
@@ -27,10 +35,14 @@ public class UserController {
     }
 
     @GetMapping("/users/{userId}")
-    public String getUser(@RequestParam int userId, Map<String, Object> map) {
-        MyUser myUser = users.get(userId);
-        map.put("abc", myUser);
-        return "user_detail";
+    public String getUser(@PathVariable int userId, Map<String, Object> map) {
+        MyUser myUser = users.getOrDefault(userId, defaultUser);
+        String token = jwtService.encryptToken(myUser);
+        String decryptUserName = jwtService.decryptUserName(token);
+        map.put("jwtToken", token);
+        map.put("jwtUserName", decryptUserName);
+        map.put("abc", myUser); // match the data name in the HTML
+        return "user_detail"; // HTML file in View
     }
 
     @GetMapping("/users")
@@ -41,7 +53,8 @@ public class UserController {
                 return "user_detail";
             }
         }
-        return null;
+        map.put("abc", defaultUser);
+        return "user_detail";
     }
 
 //    public String getUsers(int userId) {
