@@ -13,11 +13,11 @@ public interface OnlineShoppingCommodityMapper {
 
     OnlineShoppingCommodity selectByPrimaryKey(Long commodityId);
 
-    List<OnlineShoppingCommodity> queryCommoditiesByUserId(Long userId);
-
     int updateByPrimaryKeySelective(OnlineShoppingCommodity record);
 
     int updateByPrimaryKey(OnlineShoppingCommodity record);
+
+    List<OnlineShoppingCommodity> queryCommoditiesByUserId(Long userId);
 
     List<OnlineShoppingCommodity> listCommodities();
 }

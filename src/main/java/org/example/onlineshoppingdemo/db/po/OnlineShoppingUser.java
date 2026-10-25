@@ -1,12 +1,5 @@
 package org.example.onlineshoppingdemo.db.po;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-
-@AllArgsConstructor
-@Data
-@Builder
 public class OnlineShoppingUser {
     private Long userId;
 
