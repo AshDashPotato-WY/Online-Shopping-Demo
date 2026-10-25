@@ -28,7 +28,13 @@ public class UserController {
                           @RequestParam int age,
                           @RequestParam String email,
                           Map<String, Object> map) {
-        MyUser myUser = new MyUser(id, name, age, email);
+        // MyUser myUser = new MyUser(id, name, age, email);
+        MyUser myUser = MyUser.builder()
+                        .id(id)
+                        .age(age)
+                        .name(name)
+                        .email(email)
+                        .build();
         users.put(id, myUser); // store temporary info in the buffer
         map.put("abc", myUser); // put actual info in the View
         return "user_detail";
