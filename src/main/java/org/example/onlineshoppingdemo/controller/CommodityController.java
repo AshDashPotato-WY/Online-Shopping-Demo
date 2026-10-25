@@ -4,10 +4,7 @@ import jakarta.annotation.Resource;
 import org.example.onlineshoppingdemo.db.dao.OnlineShoppingCommodityDao;
 import org.example.onlineshoppingdemo.db.po.OnlineShoppingCommodity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -51,6 +48,14 @@ public class CommodityController {
         List<OnlineShoppingCommodity> onlineShoppingCommodityList = onlineShoppingCommodityDao.listItems();
         resultMap.put("itemList", onlineShoppingCommodityList);
         return "list_items";
+    }
+
+    @GetMapping("/item/{commodityId}")
+    public String getItemById(@PathVariable long commodityId,
+                              Map<String, Object> resultMap) {
+        OnlineShoppingCommodity commodity = onlineShoppingCommodityDao.selectByCommodityId(commodityId);
+        resultMap.put("commodity", commodity);
+        return "item_detail";
     }
 
 }
