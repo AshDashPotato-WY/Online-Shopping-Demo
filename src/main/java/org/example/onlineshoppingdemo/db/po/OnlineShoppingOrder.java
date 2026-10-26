@@ -1,7 +1,14 @@
 package org.example.onlineshoppingdemo.db.po;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 import java.util.Date;
 
+@Builder
+@Data
+@AllArgsConstructor
 public class OnlineShoppingOrder {
     private Long orderId;
 
