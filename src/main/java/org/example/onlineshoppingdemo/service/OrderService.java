@@ -7,6 +7,7 @@ import org.example.onlineshoppingdemo.db.dao.OnlineShoppingOrderDao;
 import org.example.onlineshoppingdemo.db.po.OnlineShoppingCommodity;
 import org.example.onlineshoppingdemo.db.po.OnlineShoppingOrder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.UUID;
@@ -20,6 +21,7 @@ public class OrderService {
     @Resource
     private OnlineShoppingCommodityDao commodityDao;
 
+    @Transactional(rollbackFor = Exception.class)
     public OnlineShoppingOrder createOnlineShoppingOrder(long userId, long commodityId) {
         // query commodity to make sure it is available >= 0
         OnlineShoppingCommodity commodity = commodityDao.selectByCommodityId(commodityId);
