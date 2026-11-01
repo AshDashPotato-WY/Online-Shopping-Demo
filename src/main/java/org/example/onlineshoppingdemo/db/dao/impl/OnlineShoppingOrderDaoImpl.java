@@ -26,4 +26,5 @@ public class OnlineShoppingOrderDaoImpl implements OnlineShoppingOrderDao {
     public int updateOrder(OnlineShoppingOrder onlineShoppingOrder) {
         return  mapper.updateByPrimaryKeySelective(onlineShoppingOrder);
     }
+
 }

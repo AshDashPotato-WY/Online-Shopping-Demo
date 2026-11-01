@@ -22,7 +22,7 @@ public class OrderService {
     private OnlineShoppingCommodityDao commodityDao;
 
     @Transactional(rollbackFor = Exception.class)
-    public OnlineShoppingOrder createOnlineShoppingOrder(long userId, long commodityId) {
+    public OnlineShoppingOrder createOnlineShoppingOrderOrin(long userId, long commodityId) {
         // query commodity to make sure it is available >= 0
         OnlineShoppingCommodity commodity = commodityDao.selectByCommodityId(commodityId);
         Integer availableStock = commodity.getAvailableStock();
@@ -31,25 +31,44 @@ public class OrderService {
             availableStock--;
             commodity.setAvailableStock(availableStock);
             commodityDao.updateCommodity(commodity);
-            // create Order instance
-            OnlineShoppingOrder order = OnlineShoppingOrder.builder()
-                    .commodityId(commodityId)
-                    .orderNo(UUID.randomUUID().toString())
-                    .userId(userId)
-                    .orderAmount(1L)
-                    .orderStatus(1)
-                    // 1. pending payment
-                    // 2. finish payment
-                    // 99. overtime order
-                    .createTime(new Date())
-                    .build();
-            // insert order into DB
-            orderDao.insertOrder(order);
-            return order;
+            return createOder(userId, commodityId);
         } else {
             log.warn("commodity out of stock, commodityId:" + commodity.getCommodityId());
             return null;
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public OnlineShoppingOrder createOnlineShoppingOrderOneSQL(long userId, long commodityId) {
+        // query commodity to make sure it is available >= 0
+       boolean result = commodityDao.deductStock(commodityId); // 0 : no available, 1 : success available -1
+        if(result) {
+            // create order
+            return createOder(userId, commodityId);
+        } else {
+            log.warn("commodity out of stock, commodityId:" + commodityId);
+            return null;
+        }
+
+
+    }
+
+    private OnlineShoppingOrder createOder(long userId, long commodityId) {
+        // create Order instance
+        OnlineShoppingOrder order = OnlineShoppingOrder.builder()
+                .commodityId(commodityId)
+                .orderNo(UUID.randomUUID().toString())
+                .userId(userId)
+                .orderAmount(1L)
+                .orderStatus(1)
+                // 1. pending payment
+                // 2. finish payment
+                // 99. overtime order
+                .createTime(new Date())
+                .build();
+        // insert order into DB
+        orderDao.insertOrder(order);
+        return order;
     }
 
     public OnlineShoppingOrder queryOrder(String orderNum) {

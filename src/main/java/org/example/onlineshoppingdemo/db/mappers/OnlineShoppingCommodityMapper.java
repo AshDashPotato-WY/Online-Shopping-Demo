@@ -20,4 +20,6 @@ public interface OnlineShoppingCommodityMapper {
     List<OnlineShoppingCommodity> queryCommoditiesByUserId(Long userId);
 
     List<OnlineShoppingCommodity> listCommodities();
+
+    boolean deductStock(long commodityId);
 }

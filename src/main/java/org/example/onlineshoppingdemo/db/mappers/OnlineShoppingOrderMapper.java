@@ -16,4 +16,6 @@ public interface OnlineShoppingOrderMapper {
     int updateByPrimaryKey(OnlineShoppingOrder record);
 
     OnlineShoppingOrder queryOrderByOrderNum(String orderNum);
+
+    boolean deductStock(OnlineShoppingOrder onlineShoppingOrder);
 }
