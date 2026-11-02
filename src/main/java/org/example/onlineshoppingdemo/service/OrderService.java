@@ -6,6 +6,7 @@ import org.example.onlineshoppingdemo.db.dao.OnlineShoppingCommodityDao;
 import org.example.onlineshoppingdemo.db.dao.OnlineShoppingOrderDao;
 import org.example.onlineshoppingdemo.db.po.OnlineShoppingCommodity;
 import org.example.onlineshoppingdemo.db.po.OnlineShoppingOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,8 @@ public class OrderService {
 
     @Resource
     private OnlineShoppingCommodityDao commodityDao;
+    @Autowired
+    private RedisService redisService;
 
     @Transactional(rollbackFor = Exception.class)
     public OnlineShoppingOrder createOnlineShoppingOrderOrin(long userId, long commodityId) {
@@ -49,8 +52,20 @@ public class OrderService {
             log.warn("commodity out of stock, commodityId:" + commodityId);
             return null;
         }
+    }
 
-
+    @Transactional(rollbackFor = Exception.class)
+    public OnlineShoppingOrder createOnlineShoppingOrderRedis(long userId, long commodityId) {
+        // 1k:sql 10k:ddb 100k:redis
+        String redisKey = "online_shopping_commodity_" + commodityId;
+        long result = redisService.deductStock(redisKey);
+        if(result >= 0) {
+            // create order
+            return createOnlineShoppingOrderOrin(userId, commodityId);
+        } else {
+            log.warn("commodity out of stock, commodityId:" + commodityId);
+            return null;
+        }
     }
 
     private OnlineShoppingOrder createOder(long userId, long commodityId) {

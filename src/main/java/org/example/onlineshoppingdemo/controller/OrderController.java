@@ -26,7 +26,8 @@ public class OrderController {
                                @PathVariable long commodityId,
                                Map<String, Object> resultMap) {
         OnlineShoppingOrder onlineShoppingOrder =
-                orderService.createOnlineShoppingOrderOneSQL(userId, commodityId);
+//                orderService.createOnlineShoppingOrderOneSQL(userId, commodityId);
+                orderService.createOnlineShoppingOrderRedis(userId, commodityId);
         // order creation succeeds
         if (onlineShoppingOrder != null) {
             resultMap.put("resultInfo", "Place order success! Order number:" + onlineShoppingOrder.getOrderNo());
