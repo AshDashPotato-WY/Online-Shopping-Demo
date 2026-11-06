@@ -49,4 +49,33 @@ public class RedisService {
         // return available_stock
 
     }
+
+    public boolean tryToGetDistributedLock(long commodityId, String requestId, int delayInMillSeconds) {
+        Jedis jedis = jedisPool.getResource();
+        // key value: commodityId, requestId
+        String key = "commodityLock:" + commodityId;
+        String result = jedis.set(key, requestId, "NX", "EX", delayInMillSeconds);
+        jedis.close();
+        return ("OK").equals(result);
+    }
+
+    public boolean releaseDistributedLock(long commodityId, String requestId) {
+        Jedis jedis = jedisPool.getResource();
+        String key = "commodityLock:" + commodityId;
+        // check key exist, get the value
+        // compare value with requestId
+        // if yes, delete key
+        // due to lookup and update are 2 steps, have to use Script to do the process
+        String Script =
+                "if redis.call('get', KEYS[1]) == ARGV[1] then\n" +
+                        "    return redis.call('del', KEYS[1])\n" +
+                        "else\n" +
+                        "    return 0\n" +
+                        "end";
+        Long result = (Long)jedis.eval(Script,
+                Collections.singletonList(key),
+                Collections.singletonList(requestId));
+        jedis.close();
+        return result == 1L;
+    }
 }

@@ -93,4 +93,21 @@ public class OrderService {
     public int updateOrder(OnlineShoppingOrder onlineShoppingOrder) {
         return orderDao.updateOrder(onlineShoppingOrder);
     }
+
+    public OnlineShoppingOrder createOnlineShoppingOrderDistributedLock(long userId, long commodityId) {
+        // try to acquire a lock
+        String requestId = UUID.randomUUID().toString();
+        boolean lockAcquired = redisService.tryToGetDistributedLock(commodityId, requestId, 5000);
+        // if lock gets acquired
+        if(lockAcquired) {
+             OnlineShoppingOrder order = createOnlineShoppingOrderOrin(userId, commodityId);
+             redisService.releaseDistributedLock(commodityId, requestId);
+             return order;
+        }
+        // else try again later
+        else {
+            return null;
+        }
+
+    }
 }
